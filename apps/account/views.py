@@ -6,10 +6,24 @@ from datetime import datetime
 from .models import Account, People
 from .forms import FileForm
 
+
 class AccountListView(ListView):
     model = Account
     template_name = 'account/index.html'
     context_object_name = 'account_list'
+
+
+class AccountDetailView(DetailView):
+    model = Account
+    template_name = 'account/detail.html'
+    context_object_name = 'account'
+    slug_field = 'name' #重新设定slug的字段
+    slug_url_kwarg = 'name' #定位到slug字段，可能他存入的是字典类型
+
+    def get_context_data(self, **kwargs):
+        context = super(AccountDetailView, self).get_context_data(**kwargs)
+        context['people_list'] = self.object.people.filter(is_del=False)
+        return context
 
 
 class FileUploadView(FormView):

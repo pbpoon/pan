@@ -5,7 +5,7 @@
     {% for account in account_list %}
     <div class="ui list">
         <div class="item">
-            <a href="" class="ui header"> {{ account }}  {{ account.created }}</a>
+            <a href="{{ account.get_absolute_url }}" class="ui divider">{{ account }}- {{ account.get_peolpe_count }}人</a>
         </div>
     </div>
     {% endfor %}
