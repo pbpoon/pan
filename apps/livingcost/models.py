@@ -7,7 +7,7 @@ class WaterNum(models.Model):
     desc = models.CharField('描述', max_length=28, null=True, blank=True)
     create_d = models.DateTimeField('录入日期', auto_now_add=True)
     update_d = models.DateTimeField('修改日期', auto_now=True)
-    is_del =models.BooleanField('是否注销', default=False)
+    is_del = models.BooleanField('是否注销', default=False)
 
     class Meta:
         verbose_name = '水表号'
@@ -33,10 +33,16 @@ class WaterRate(models.Model):
         ordering = ['-mark_d']
 
     def get_total_m3(self):
-        meter_nums = self.objects.all()
-        return self.meter_num - meter_nums[len(meter_nums) - 2].meter_num
+        # 求得本次用水量
+        try:
+            meter_nums = WaterRate.objects.filter(mark_d__lt=self.mark_d)[0]
+            if meter_nums.exists():
+                return self.meter_num - meter_nums.meter_num
+        except:
+            return self.meter_num
 
     def get_total_price(self):
+        # 计算出本次应缴水费
         return self.get_total_m3() * self.mark_d.real_price()
 
 
@@ -58,7 +64,7 @@ class CenterWater(models.Model):
         # 求得本次的用水量
         try:
             meter_nums = CenterWater.objects.filter(mark_d__lt=self.mark_d)[0]
-            if meter_nums:
+            if meter_nums.exists():
                 return self.meter_num - meter_nums.meter_num
         except:
             return self.meter_num
@@ -66,14 +72,12 @@ class CenterWater(models.Model):
 
     def get_total_rate(self):
         # 求得总表应缴纳水费
-        m3 = self.get_total_m3()
-        type(m3)
-        return m3 * self.price
+        return self.get_total_m3() * self.price
 
     def get_total_account_m3(self):
         # 求得全村的总用水量
         if self.account_rate.exists():
-            return self.account_rate.aggregate(total_account_m3 =Sum('m3'))
+            return self.account_rate.filter(WaterNum__is_del=False).aggregate(total_account_m3 =Sum('m3'))
         return 1
 
     def get_balance_m3(self):
@@ -81,6 +85,7 @@ class CenterWater(models.Model):
         return self.m3 - self.get_total_account_m3()
 
     def real_price(self):
+        # 通过差价求得实际本次水费单价
         return self.get_total_rate() / self.get_total_account_m3()
 
     def __str__(self):
