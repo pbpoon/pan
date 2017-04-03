@@ -55,17 +55,29 @@ class CenterWater(models.Model):
         ordering = ['-mark_d']
 
     def get_total_m3(self):
-        meter_nums = CenterWater.objects.all()
-        if meter_nums:
-            return self.meter_num - meter_nums[len(meter_nums)-2].meter_num
+        # 求得本次的用水量
+        try:
+            meter_nums = CenterWater.objects.filter(mark_d__lt=self.mark_d)[0]
+            if meter_nums:
+                return self.meter_num - meter_nums.meter_num
+        except:
+            return self.meter_num
+        # m3 = property(get_total_m3)
 
     def get_total_rate(self):
-        return self.get_total_m3() * self.price
+        # 求得总表应缴纳水费
+        m3 = self.get_total_m3()
+        type(m3)
+        return m3 * self.price
 
     def get_total_account_m3(self):
-        return self.account_rate.aggregate(total_account_m3 =Sum('m3'))
+        # 求得全村的总用水量
+        if self.account_rate.exists():
+            return self.account_rate.aggregate(total_account_m3 =Sum('m3'))
+        return 1
 
     def get_balance_m3(self):
+        # 计算总表与全村的总用水量的差额
         return self.m3 - self.get_total_account_m3()
 
     def real_price(self):

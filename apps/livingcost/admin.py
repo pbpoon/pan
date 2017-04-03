@@ -15,7 +15,7 @@ class InlineNumWaterRate(admin.TabularInline):
 
 @admin.register(CenterWater)
 class CenterWaterAdmin(admin.ModelAdmin):
-    list_display = ['mark_d', 'meter_num', 'ps', 'is_pay', 'get_total_m3']
+    list_display = ['mark_d', 'meter_num', 'get_total_m3', 'real_price', 'ps', 'is_pay']
     inlines = [InlineCenterWaterRate]
 
 
