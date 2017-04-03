@@ -26,6 +26,18 @@ class AccountDetailView(DetailView):
         return context
 
 
+class PeopleView(DetailView):
+    model = People
+    template_name = 'account/people.html'
+    context_object_name = 'people'
+    pk_url_kwarg = 'pk'
+
+    def get_context_data(self, **kwargs):
+        context = super(PeopleView, self).get_context_data(**kwargs)
+        context['account'] = Account.objects.get(people=self.object)
+        return context
+
+
 class FileUploadView(FormView):
     template_name = 'account/file.html'
     form_class = FileForm

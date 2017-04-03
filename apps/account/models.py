@@ -28,6 +28,9 @@ class Account(models.Model):
     def get_peolpe_count(self):
         return self.people.filter(is_del=False).count()
 
+    def get_getmoney_count(self):
+        return self.people.filter(is_getmoney=True).count()
+
 
 class People(models.Model):
     SEX_CHOICES = (
@@ -78,4 +81,5 @@ class People(models.Model):
             return today.year - self.birthday.year
 
     def get_absolute_url(self):
-        return reverse("account:detail", kwargs={'pk':self.id})
+        return reverse("account:people", kwargs={'pk':self.id})
+

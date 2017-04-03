@@ -1,0 +1,30 @@
+{% extends 'basic.html' %}
+{% block title %}户口{% endblock %}
+{% block conten %}
+    <div class="ui container">
+    <div class="ui  segment">
+        <div class="ui header">所属户口:<a href="{{ account.get_absolute_url }}">{{ account }}</a></div>
+        <div class="ui divider"></div>
+        <div class="ui relaxed divided list">
+
+            <div class="item">
+                <div class="content">
+                    <div class="header">姓名：</div>
+                    {{ people }}
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">性别：</div>
+                    {{ people.sex }}
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">身份证号码：</div>
+                    {{ people.id_card_num }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
