@@ -20,7 +20,7 @@ class WaterNum(models.Model):
 class WaterRate(models.Model):
     WaterNum = models.ForeignKey('WaterNum', related_name='rate', verbose_name='水表号码')
     mark_d = models.ForeignKey('CenterWater', related_name='account_rate', verbose_name='抄表日期')
-    m3 = models.DecimalField('用水数量', max_digits=9, decimal_places=2)
+    meter_num = models.DecimalField('水表度数', max_digits=9, decimal_places=2)
     ps = models.CharField('备注信息', max_length=200, null=True, blank=True)
     is_pay = models.BooleanField('已缴费', default=False)
     create_d = models.DateTimeField('录入日期', auto_now_add=True)
@@ -29,17 +29,24 @@ class WaterRate(models.Model):
     class Meta:
         verbose_name = '水费'
         verbose_name_plural = verbose_name
+        get_latest_by = 'mark_d'
+        ordering = ['-mark_d']
+
+    def get_total_m3(self):
+        meter_nums = self.objects.all()
+        return self.meter_num - meter_nums[len(meter_nums) - 2].meter_num
 
     def get_total_price(self):
-        return self.m3 * self.mark_d.real_price()
+        return self.get_total_m3() * self.mark_d.real_price()
 
 
 class CenterWater(models.Model):
-    mark_d = models.DateField('抄表日期', auto_now_add=True)
-    m3 = models.DecimalField('用水数量', max_digits=9, decimal_places=2)
+    mark_d = models.DateField('抄表日期')
+    meter_num = models.DecimalField('水表度数', max_digits=9, decimal_places=2, default=0)
     ps = models.CharField('备注信息', max_length=200, null=True, blank=True)
     price = models.DecimalField('单价', max_digits=5, decimal_places=2, default=3.6, help_text='水费单价，默认是3.6元/m3')
     is_pay = models.BooleanField('已缴费', default=False)
+    is_post = models.BooleanField('发布', default=False)
 
     class Meta:
         verbose_name = '总表信息'
@@ -47,8 +54,13 @@ class CenterWater(models.Model):
         get_latest_by = 'mark_d'
         ordering = ['-mark_d']
 
+    def get_total_m3(self):
+        meter_nums = CenterWater.objects.all()
+        if meter_nums:
+            return self.meter_num - meter_nums[len(meter_nums)-2].meter_num
+
     def get_total_rate(self):
-        return self.m3 * self.price
+        return self.get_total_m3() * self.price
 
     def get_total_account_m3(self):
         return self.account_rate.aggregate(total_account_m3 =Sum('m3'))
@@ -60,4 +72,4 @@ class CenterWater(models.Model):
         return self.get_total_rate() / self.get_total_account_m3()
 
     def __str__(self):
-        return '{0}:{0}'.format(self.mark_d, self.m3)
+        return '{0}:{1}'.format(self.mark_d, self.get_total_m3())
