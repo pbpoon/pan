@@ -25,6 +25,48 @@
                     {{ people.id_card_num }}
                 </div>
             </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">是否已婚：</div>
+                    {{ people.is_main }}
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">出生年月日</div>
+                    {{ people.birthday }}
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">年龄：</div>
+                    {{ people.get_age }}
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">分钱资格：</div>
+                    {{ people.is_getmoney }}
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">入户日期：</div>
+                    {{ people.joind }}
+                </div>
+            </div>
+             <div class="item">
+                <div class="content">
+                    <div class="header">教育程度：</div>
+                    {{ people.education }}
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">戶口類型：</div>
+                    {{ people.account_type }}
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
