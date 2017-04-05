@@ -622,11 +622,22 @@
       <option name="project" value="LOCAL" />
       <updated>1491239059560</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="asset app关于田亩方面,基本上完成model">
+      <created>1491239075427</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1491239075427</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="ToolWindowManager">
+<<<<<<< HEAD
     <frame x="66" y="-3" width="1855" height="1084" extended-state="1" />
+=======
+    <frame x="0" y="24" width="1680" height="1026" extended-state="6" />
+>>>>>>> db3ec05658c22acdca70fe0f137690e97bb72423
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14879282" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" x="573" y="213" width="259" height="683" />
