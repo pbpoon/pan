@@ -35,11 +35,11 @@ class FileUploadView(FormView):
                         if index == 0:
                             people = People.objects.all()
                             sname = str(row[i])
-                            if people.get(first_name=sname[:1], last_name=sname[1:6]):
-                                row[i] = people.get(first_name=sname[:1], last_name=sname[2:6])
+                            if people.filter(first_name=sname[:1], last_name=sname[1:6]).exists():
+                                row[i] = people.get(first_name=sname[:1], last_name=sname[1:6])
                             else:
-                                row[i] = None
-                            row[7] = row[i]
+                                row[i] = ''
+                            row[7] = str(row[i])
                         elif index == 1:
                             row[i] = Category.objects.get(name=str(row[i]))
                         elif index == 2:
@@ -56,7 +56,7 @@ class FileUploadView(FormView):
 
 
                 # if not LandNum.objects.filter(area=row[2], num=row[3]):
-                land = LandNum(area=row[2], num=row[3], category=row[1], fm=row[4], owner=row[0], ps=row[6])
+                land = LandNum(area=row[2], num=row[3], category=row[1], fm=row[4], ps=row[6])
                 land.save()
                 owner = Owner(owner=row[0], old_owner=row[7], num=land, ps=row[6])
                 owner.save()
