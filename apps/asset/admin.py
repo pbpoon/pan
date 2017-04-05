@@ -8,9 +8,9 @@ class InlineAreaLandNum(admin.TabularInline):
     # raw_id_fields = ('area',)
 
 
-class InlineOwnerLandNum(admin.StackedInline):
-    model = LandNum.owner.through
-    raw_id_fields = ('owner',)
+class InlineOwnerLandNum(admin.TabularInline):
+    model = Owner
+    # raw_id_fields = ('owner',)
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -24,6 +24,6 @@ class AreaAdmin(admin.ModelAdmin):
     inlines = [InlineAreaLandNum]
 
 
-@admin.register(Owner)
+@admin.register(LandNum)
 class OwnerAdmin(admin.ModelAdmin):
     inlines = [InlineOwnerLandNum]
