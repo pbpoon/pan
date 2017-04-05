@@ -62,8 +62,8 @@ class Owner(models.Model):
         unique_together = ('owner', 'num')
 
     def __str__(self):
-        return self.owner.get_full_name
-        # return '{0} {1}'.format(self.owner.first_name, self.owner.last_name)
+        # return self.owner.get_full_name
+        return '{0} {1}'.format(self.owner.first_name, self.owner.last_name)
 
 
 
