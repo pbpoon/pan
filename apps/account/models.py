@@ -83,3 +83,6 @@ class People(models.Model):
     def get_absolute_url(self):
         return reverse("account:people", kwargs={'pk':self.id})
 
+    @property
+    def get_full_name(self):
+        return '{} {}'.format(self.first_name, self.last_name)
