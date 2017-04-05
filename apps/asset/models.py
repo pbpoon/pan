@@ -30,8 +30,6 @@ class Area(models.Model):
 
 
 class LandNum(models.Model):
-    owner = models.ManyToManyField('Owner', related_name='land',verbose_name='所属人')
-    old_owner = models.CharField('原所属人', max_length=50, null=True, blank=True)
     num = models.CharField('田地号码', max_length=10, db_index=True)
     category = models.ForeignKey('Category', null=True, blank=True, related_name='land_num', verbose_name='分类名称')
     fm = models.DecimalField('分亩', max_digits=5, decimal_places=2, null=False, help_text='单位为分岁')
@@ -50,7 +48,9 @@ class LandNum(models.Model):
 
 
 class Owner(models.Model):
-    owner = models.ForeignKey('account.People', related_name='land', verbose_name='所属人')
+    owner = models.ForeignKey('account.People', related_name='land', null=True, blank=True, verbose_name='所属人')
+    old_owner = models.CharField('原所属人', max_length=50, null=True, blank=True)
+    num = models.ForeignKey('LandNum', related_name='owner', verbose_name='田地号码')
     ps = models.TextField('备注信息', null=True, blank=True)
     create_d = models.DateField('添加日期', auto_now_add=True)
     update_d = models.DateTimeField('修改日期', auto_now=True)
@@ -59,6 +59,7 @@ class Owner(models.Model):
     class Meta:
         verbose_name = '田地原所属人信息'
         verbose_name_plural = verbose_name
+        unique_together = ('owner', 'num')
 
     def __str__(self):
         return self.owner.get_full_name
