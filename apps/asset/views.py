@@ -1,10 +1,33 @@
-from django.shortcuts import render
-from django.views.generic import FormView
+from django.shortcuts import render, HttpResponse, get_object_or_404
+from django.views.generic import FormView, ListView, DateDetailView
 from account.forms import FileForm
 from .models import Area, Category, LandNum, Owner
 from account.models import People
 import xlrd
 import decimal
+
+
+class OwnerListView(ListView):
+    context_object_name = 'asset_list'
+    items=[]
+    querysett = Owner.objects.all()
+    for item in querysett:
+        if item.old_owner not in querysett:
+            items.append(item)
+    queryset = Owner.objects.filter(old_owner__in=items)
+    template_name = 'asset/index.html'
+
+
+def owner_land_listview(request, owner_id):
+    aold_owner = get_object_or_404(Owner, pk = owner_id).old_owner
+    owner_lst = Owner.objects.filter(old_owner=aold_owner)
+    for i in owner_lst:
+        try:
+            int(i.owner)
+            i.owner = People.objects.get(pk=int(i.owner))
+        except:
+            i.owner = i.owner
+    return render(request, 'asset/owner_land_list.html', locals())
 
 
 class FileUploadView(FormView):
@@ -35,11 +58,11 @@ class FileUploadView(FormView):
                         if index == 0:
                             people = People.objects.all()
                             sname = str(row[i])
-                            if people.filter(first_name=sname[:1], last_name=sname[1:6]).exists():
-                                row[i] = people.get(first_name=sname[:1], last_name=sname[1:6])
-                            else:
-                                row[i] = ''
                             row[7] = str(row[i])
+                            if people.filter(first_name=sname[:1], last_name=sname[1:6]).exists():
+                                row[i] = people.get(first_name=sname[:1], last_name=sname[1:6]).id
+                            # else:
+                            #     row[i] = None
                         elif index == 1:
                             row[i] = Category.objects.get(name=str(row[i]))
                         elif index == 2:
@@ -58,11 +81,12 @@ class FileUploadView(FormView):
                 # if not LandNum.objects.filter(area=row[2], num=row[3]):
                 land = LandNum(area=row[2], num=row[3], category=row[1], fm=row[4], ps=row[6])
                 land.save()
-                owner = Owner(owner=row[0], old_owner=row[7], num=land, ps=row[6])
-                owner.save()
+                Owner.objects.create(num=land, owner=str(row[0]), old_owner=row[7], ps=row[6])
+                # owner.save()
 
 
 
             print('OK')
+        return HttpResponse('OK')
                 # account = row[10],
         # People.objects.bulk_create(list)

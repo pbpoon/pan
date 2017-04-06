@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Sum
+from account.models import People
 
 
 class Category(models.Model):
@@ -47,8 +48,9 @@ class LandNum(models.Model):
         return '{0}{1}'.format(self.area, self.num)
 
 
+
 class Owner(models.Model):
-    owner = models.ForeignKey('account.People', related_name='land', null=True, blank=True, verbose_name='所属人')
+    owner = models.CharField(max_length=20, null=True, blank=True, verbose_name='所属人')
     old_owner = models.CharField('原所属人', max_length=50, null=True, blank=True)
     num = models.ForeignKey('LandNum', related_name='owner', verbose_name='田地号码')
     ps = models.TextField('备注信息', null=True, blank=True)
@@ -57,13 +59,26 @@ class Owner(models.Model):
     file = models.FileField('资料', upload_to='asset/land/Y%m%/', blank=True)
 
     class Meta:
-        verbose_name = '田地原所属人信息'
+        verbose_name = '原所属人田地明细'
         verbose_name_plural = verbose_name
         unique_together = ('owner', 'num')
 
     def __str__(self):
         # return self.owner.get_full_name
-        return '{0} {1}'.format(self.owner.first_name, self.owner.last_name)
+        return '{0} {1}'.format(self.old_owner, self.num)
+    @property
+    def get_owner_fm(self):
+        owner_land = Owner.objects.filter(old_owner=self.old_owner).num
+        return LandNum.objects.filter(num__in=owner_land).aggregate(sum_fm=Sum(fm))
+
+
+class LandOwner(People):
+    pass
+
+    class Meta:
+        verbose_name = '田地所属于人信息'
+        verbose_name_plural = verbose_name
+        proxy = True
 
 
 
