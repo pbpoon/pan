@@ -42,7 +42,7 @@ class People(models.Model):
     sex = models.CharField('性别', choices=SEX_CHOICES, max_length=6)
     id_card_num = models.CharField('身份证号码', db_index=True, max_length=18, null=True, blank=True)
     is_main = models.BooleanField('是否为户主', default=False)
-    account = models.ForeignKey('Account', related_name='people',null=True, blank=True, verbose_name='所属户口')
+    account = models.ForeignKey('Account', related_name='people', null=True, blank=True, verbose_name='所属户口')
     birthday = models.DateField('出生日期', null=True, blank=True)
     is_marry = models.BooleanField('是否已婚', default=False)
     is_getmoney = models.BooleanField('分钱资格', default=False)
