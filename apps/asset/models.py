@@ -31,6 +31,7 @@ class Area(models.Model):
 
 
 class LandNum(models.Model):
+    owner = models.ManyToManyField('account.People',through='Owner', related_name='land_num', verbose_name='所有人')
     num = models.CharField('田地号码', max_length=10, db_index=True)
     category = models.ForeignKey('Category', null=True, blank=True, related_name='land_num', verbose_name='分类名称')
     fm = models.DecimalField('分亩', max_digits=5, decimal_places=2, null=False, help_text='单位为分岁')
@@ -48,11 +49,10 @@ class LandNum(models.Model):
         return '{0}{1}'.format(self.area, self.num)
 
 
-
 class Owner(models.Model):
-    owner = models.CharField(max_length=20, null=True, blank=True, verbose_name='所属人')
-    old_owner = models.CharField('原所属人', max_length=50, null=True, blank=True)
-    num = models.ForeignKey('LandNum', related_name='owner', verbose_name='田地号码')
+    owner = models.ForeignKey('account.People', on_delete=models.CASCADE, verbose_name='所属人')
+    old_owner = models.ForeignKey('account.People', related_name='old_owner', verbose_name='原有人')
+    num = models.ForeignKey('LandNum', on_delete=models.CASCADE, related_name='owner', verbose_name='田地号码')
     ps = models.TextField('备注信息', null=True, blank=True)
     create_d = models.DateField('添加日期', auto_now_add=True)
     update_d = models.DateTimeField('修改日期', auto_now=True)
@@ -66,10 +66,6 @@ class Owner(models.Model):
     def __str__(self):
         # return self.owner.get_full_name
         return '{0} {1}'.format(self.old_owner, self.num)
-    @property
-    def get_owner_fm(self):
-        owner_land = Owner.objects.filter(old_owner=self.old_owner).num
-        return LandNum.objects.filter(num__in=owner_land).aggregate(sum_fm=Sum(fm))
 
 
 class LandOwner(People):
